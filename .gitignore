@@ -1,0 +1,4 @@
+node_modules/
+dicas.txt
+.env
+dist/
