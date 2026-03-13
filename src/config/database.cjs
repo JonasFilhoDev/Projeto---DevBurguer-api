@@ -1,5 +1,8 @@
+const pg = require('pg');
+
 module.exports = {
   dialect: 'postgres',
+  dialectModule: pg,
   host: 'dpg-d6q4hnp5pdvs738pdne0-a.oregon-postgres.render.com',
   port: 5432,
   username: 'devburguer_tjvv_user',
