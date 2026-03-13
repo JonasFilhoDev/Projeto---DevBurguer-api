@@ -1,8 +1,12 @@
-const multer = require('multer');
-const { resolve } = require('node:path');
-const { v4 } = require('uuid');
+import multer from 'multer';
+import { v4 } from 'uuid';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export default {
   storage: multer.diskStorage({
     destination: resolve(__dirname, '..', '..', 'uploads'),
     filename: (_request, file, callback) => {
