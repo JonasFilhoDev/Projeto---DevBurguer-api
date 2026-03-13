@@ -23,8 +23,7 @@ class Database {
   }
 
   mongo() {
-    this.mongooseConnection = mongoose.connect(
-      'mongodb://localhost:27017/devburguer')
+    this.mongooseConnection = mongoose.connect(process.env.MONGO_URL);
   }
 }
 
