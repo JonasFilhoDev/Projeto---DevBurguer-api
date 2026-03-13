@@ -1,4 +1,4 @@
-import * as Yup from 'Yup';
+import * as Yup from 'yup';
 import Product from '../models/Product.js';
 import Category from '../models/Category.js';
 import Order from '../schemas/Order.js';
