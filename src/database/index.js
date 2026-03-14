@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize';
 import mongoose from 'mongoose';
+import 'dotenv/config';
 import databaseConfig from '../config/database.cjs';
 import User from '../app/models/user.js';
 import Product from '../app/models/Product.js';
