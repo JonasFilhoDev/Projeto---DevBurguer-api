@@ -1,17 +1,21 @@
 import multer from 'multer';
-import { v4 } from 'uuid';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
-export default {
-  storage: multer.diskStorage({
-    destination: resolve(__dirname, '..', '..', 'uploads'),
-    filename: (_request, file, callback) => {
-      const uniqueName = v4().concat(`-${file.originalname}`);
-      return callback(null, uniqueName);
-    },
-  }),
-};
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'devburguer',
+    allowed_formats: ['jpg', 'png', 'jpeg'],
+  },
+});
+
+export default multer({ storage });

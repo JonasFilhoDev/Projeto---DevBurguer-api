@@ -18,14 +18,14 @@ class ProductController {
     }
 
     const { name, price, category_id, offer } = request.body;
-    const { filename } = request.file;
+    const { path: cloudinaryPath } = request.file;
 
 
     const newProduct = await Product.create({
       name,
       price: Number(price),
       category_id: Number(category_id),
-      path: filename,
+      path: cloudinaryPath,
       offer
     });
     return response.status(201).json(newProduct);
@@ -48,39 +48,41 @@ class ProductController {
     const { name, price, category_id, offer } = request.body;
     const { id } = request.params;
 
-    let path;
+   
+    const productUpdates = {
+      name,
+      price,
+      category_id,
+      offer,
+    };
+
+   
     if (request.file) {
-      const { filename } = request.file;
-      path = filename;
+      const { path: cloudinaryPath } = request.file;
+      productUpdates.path = cloudinaryPath;
     }
 
+   
     await Product.update(
+      productUpdates, 
       {
-        name,
-        price,
-        category_id,
-        path,
-        offer,
-      },
-      {
-        where: {
-          id,
-        },
-      },
+        where: { id },
+      }
     );
+
     return response.status(200).json();
   }
   async index(_request, response) {
-      const products = await Product.findAll({
-        include: {
-          model: Category,
-          as: 'category',
-          attributes: ['id', 'name']
-        },
-      });
+    const products = await Product.findAll({
+      include: {
+        model: Category,
+        as: 'category',
+        attributes: ['id', 'name']
+      },
+    });
 
-      return response.status(200).json(products);
-    }
+    return response.status(200).json(products);
   }
+}
 
 export default new ProductController();
