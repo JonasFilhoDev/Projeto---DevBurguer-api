@@ -20,31 +20,36 @@ class UserController {
 
     const { name, email, password, admin } = request.body;
 
-    const existingUser = await User.findOne({
-      where: {
+    try {
+      const existingUser = await User.findOne({
+        where: {
+          email,
+        },
+      });
+      if (existingUser) {
+        return response.status(400).json({ message: 'Email already taken!' });
+      }
+
+      const password_hash = await bcrypt.hash(password, 10);
+
+      const user = await User.create({
+        id: v4(),
+        name,
         email,
-      },
-    });
-    if (existingUser) {
-      return response.status(400).json({ message: 'Email already taken!' });
+        password_hash,
+        admin,
+      });
+
+      return response.status(201).json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        admin: user.admin,
+      });
+    } catch (err) {
+      console.error('Error creating user:', err);
+      return response.status(500).json({ error: 'Internal server error' });
     }
-
-    const password_hash = await bcrypt.hash(password, 10);
-
-    const user = await User.create({
-      id: v4(),
-      name,
-      email,
-      password_hash,
-      admin,
-    });
-
-    return response.status(201).json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      admin: user.admin,
-    });
   }
 }
 

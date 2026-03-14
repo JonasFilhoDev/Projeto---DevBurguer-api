@@ -28,38 +28,43 @@ class SessionController {
 
     const { email, password } = request.body;
 
-    const existingUser = await User.findOne({
-      where: {
-        email,
-      },
-    });
-    if (!existingUser) {
-      emailOrPasswordIncorrect();
-    }
-
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      existingUser.password_hash,
-    );
-
-    if (!isPasswordCorrect) {
-      emailOrPasswordIncorrect();
-    }
-
-    const token = jwt.sign(
-      { id: existingUser.id, admin: existingUser.admin, name: existingUser.name, },
-      authConfig.secret, 
-      {
-      expiresIn: authConfig.expiresIn,
+    try {
+      const existingUser = await User.findOne({
+        where: {
+          email,
+        },
       });
+      if (!existingUser) {
+        emailOrPasswordIncorrect();
+      }
 
-    return response.status(200).json({
-      id: existingUser.id,
-      name: existingUser.name,
-      email: existingUser.email,
-      admin: existingUser.admin,
-      token,
-    });
+      const isPasswordCorrect = await bcrypt.compare(
+        password,
+        existingUser.password_hash,
+      );
+
+      if (!isPasswordCorrect) {
+        emailOrPasswordIncorrect();
+      }
+
+      const token = jwt.sign(
+        { id: existingUser.id, admin: existingUser.admin, name: existingUser.name, },
+        authConfig.secret,
+        {
+          expiresIn: authConfig.expiresIn,
+        });
+
+      return response.status(200).json({
+        id: existingUser.id,
+        name: existingUser.name,
+        email: existingUser.email,
+        admin: existingUser.admin,
+        token,
+      });
+    } catch (err) {
+      console.error('Error during login:', err);
+      return response.status(500).json({ error: 'Internal server error' });
+    }
   }
 }
 

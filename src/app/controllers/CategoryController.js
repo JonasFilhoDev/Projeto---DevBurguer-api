@@ -16,22 +16,27 @@ class CategoryController {
     const { name } = request.body;
     const { filename } = request.file;
 
-    const existingCategory = await Category.findOne({
-      where: {
-        name
+    try {
+      const existingCategory = await Category.findOne({
+        where: {
+          name
+        }
+      })
+
+      if (existingCategory) {
+        return response.status(400).json({ error: 'Category already exists' })
       }
-    })
 
-    if (existingCategory) {
-      return response.status(400).json({ error: 'Category already exists' })
+      const newCategory = await Category.create({
+        name,
+        path: filename,
+      });
+
+      return response.status(201).json(newCategory);
+    } catch (err) {
+      console.error('Error creating category:', err);
+      return response.status(500).json({ error: 'Internal server error' });
     }
-
-    const newCategory = await Category.create({
-      name,
-      path: filename,
-    });
-
-    return response.status(201).json(newCategory);
   }
 
   async update(request, response) {
@@ -54,33 +59,43 @@ class CategoryController {
       path = filename
     }
 
-    const existingCategory = await Category.findOne({
-      where: {
-        name        
+    try {
+      const existingCategory = await Category.findOne({
+        where: {
+          name
+        }
+      })
+
+      if (existingCategory) {
+        return response.status(400).json({ error: 'Category already exists' })
       }
-    })
 
-    if (existingCategory) {
-      return response.status(400).json({ error: 'Category already exists' })
-    }
-
-    await Category.update({
-      name,
-      path,
-    },{
-      where:{
-        id,
+      await Category.update({
+        name,
+        path,
+      }, {
+        where: {
+          id,
+        },
       },
-    },
-  );
+      );
 
-    return response.status(201).json();
+      return response.status(201).json();
+    } catch (err) {
+      console.error('Error updating category:', err);
+      return response.status(500).json({ error: 'Internal server error' });
+    }
   }
 
   async index(_request, response) {
-    const categories = await Category.findAll();
+    try {
+      const categories = await Category.findAll();
 
-    return response.status(200).json(categories);
+      return response.status(200).json(categories);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+      return response.status(500).json({ error: 'Internal server error' });
+    }
   }
 }
 

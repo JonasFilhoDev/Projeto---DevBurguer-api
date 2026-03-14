@@ -61,9 +61,14 @@ class OrderController {
             status: "Pedido realizado"
         };
 
-        const newOrder = await Order.create(order)
+        try {
+            const newOrder = await Order.create(order)
 
-        return response.status(201).json(newOrder);
+            return response.status(201).json(newOrder);
+        } catch (err) {
+            console.error('Error creating order:', err);
+            return response.status(500).json({ error: 'Internal server error' });
+        }
     }
 
     async update(request, response) {
@@ -89,9 +94,14 @@ class OrderController {
     }
 
     async index(_request, response) {
-        const orders = await Order.find()
+        try {
+            const orders = await Order.find()
 
-        return response.status(200).json(orders)
+            return response.status(200).json(orders)
+        } catch (err) {
+            console.error('Error fetching orders:', err);
+            return response.status(500).json({ error: 'Internal server error' });
+        }
 
     }
 }

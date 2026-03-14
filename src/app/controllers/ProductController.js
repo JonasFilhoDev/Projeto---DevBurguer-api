@@ -17,7 +17,7 @@ class ProductController {
       return response.status(400).json({ error: err.errors });
     }
 
-  
+
     if (!request.file) {
       return response.status(400).json({ error: 'Product image is required' });
     }
@@ -25,15 +25,20 @@ class ProductController {
     const { name, price, category_id, offer } = request.body;
     const { path: cloudinaryPath } = request.file;
 
-    const newProduct = await Product.create({
-      name,
-      price: Number(price),
-      category_id: Number(category_id),
-      path: cloudinaryPath,
-      offer,
-    });
+    try {
+      const newProduct = await Product.create({
+        name,
+        price: Number(price),
+        category_id: Number(category_id),
+        path: cloudinaryPath,
+        offer,
+      });
 
-    return response.status(201).json(newProduct);
+      return response.status(201).json(newProduct);
+    } catch (err) {
+      console.error('Error creating product:', err);
+      return response.status(500).json({ error: 'Internal server error' });
+    }
   }
 
   async update(request, response) {
@@ -64,23 +69,33 @@ class ProductController {
       productUpdates.path = cloudinaryPath;
     }
 
-    await Product.update(productUpdates, {
-      where: { id },
-    });
+    try {
+      await Product.update(productUpdates, {
+        where: { id },
+      });
 
-    return response.status(200).json();
+      return response.status(200).json();
+    } catch (err) {
+      console.error('Error updating product:', err);
+      return response.status(500).json({ error: 'Internal server error' });
+    }
   }
 
   async index(_request, response) {
-    const products = await Product.findAll({
-      include: {
-        model: Category,
-        as: 'category',
-        attributes: ['id', 'name'],
-      },
-    });
+    try {
+      const products = await Product.findAll({
+        include: {
+          model: Category,
+          as: 'category',
+          attributes: ['id', 'name'],
+        },
+      });
 
-    return response.status(200).json(products);
+      return response.status(200).json(products);
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      return response.status(500).json({ error: 'Internal server error' });
+    }
   }
 }
 
