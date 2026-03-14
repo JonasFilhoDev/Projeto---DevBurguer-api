@@ -35,9 +35,11 @@ class ProductController {
       });
 
       return response.status(201).json(newProduct);
+
     } catch (err) {
-      console.error('Error creating product:', err);
-      return response.status(500).json({ error: 'Internal server error' });
+      console.log('--- ERRO DETALHADO DO BANCO ---');
+      console.log(JSON.stringify(err, null, 2)); 
+      return response.status(500).json({ error: 'Erro no banco', message: err.message });
     }
   }
 
