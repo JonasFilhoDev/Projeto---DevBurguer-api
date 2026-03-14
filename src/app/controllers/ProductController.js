@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import Product from './../models/Product.js'
+import Product from './../models/Product.js';
 import Category from './../models/Category.js';
 
 class ProductController {
@@ -17,17 +17,22 @@ class ProductController {
       return response.status(400).json({ error: err.errors });
     }
 
+  
+    if (!request.file) {
+      return response.status(400).json({ error: 'Product image is required' });
+    }
+
     const { name, price, category_id, offer } = request.body;
     const { path: cloudinaryPath } = request.file;
-
 
     const newProduct = await Product.create({
       name,
       price: Number(price),
       category_id: Number(category_id),
       path: cloudinaryPath,
-      offer
+      offer,
     });
+
     return response.status(201).json(newProduct);
   }
 
@@ -48,36 +53,30 @@ class ProductController {
     const { name, price, category_id, offer } = request.body;
     const { id } = request.params;
 
-   
-    const productUpdates = {
-      name,
-      price,
-      category_id,
-      offer,
-    };
+    const productUpdates = {};
+    if (name) productUpdates.name = name;
+    if (price) productUpdates.price = Number(price);
+    if (category_id) productUpdates.category_id = Number(category_id);
+    if (offer !== undefined) productUpdates.offer = offer;
 
-   
     if (request.file) {
       const { path: cloudinaryPath } = request.file;
       productUpdates.path = cloudinaryPath;
     }
 
-   
-    await Product.update(
-      productUpdates, 
-      {
-        where: { id },
-      }
-    );
+    await Product.update(productUpdates, {
+      where: { id },
+    });
 
     return response.status(200).json();
   }
+
   async index(_request, response) {
     const products = await Product.findAll({
       include: {
         model: Category,
         as: 'category',
-        attributes: ['id', 'name']
+        attributes: ['id', 'name'],
       },
     });
 
