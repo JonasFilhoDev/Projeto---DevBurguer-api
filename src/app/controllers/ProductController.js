@@ -13,8 +13,19 @@ class ProductController {
 
     try {
       schema.validateSync(request.body, { abortEarly: false });
-    } catch (err) {
-      return response.status(400).json({ error: err.errors });
+    } catch (error) {
+      console.log('--- DETALHES DO ERRO NA API ---');
+      console.log('Mensagem:', error.message);
+      console.log('Stack:', error.stack);
+
+      if (error.errors) {
+        console.log('Erros de Validação:', JSON.stringify(error.errors, null, 2));
+      }
+
+      return response.status(500).json({
+        error: 'Internal Server Error',
+        message: error.message
+      });
     }
 
 
@@ -38,7 +49,7 @@ class ProductController {
 
     } catch (err) {
       console.log('--- ERRO DETALHADO DO BANCO ---');
-      console.log(JSON.stringify(err, null, 2)); 
+      console.log(JSON.stringify(err, null, 2));
       return response.status(500).json({ error: 'Erro no banco', message: err.message });
     }
   }
