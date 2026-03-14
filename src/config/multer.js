@@ -18,4 +18,6 @@ const storage = new CloudinaryStorage({
   },
 });
 
+console.log("Configurando Cloudinary com:", process.env.CLOUDINARY_CLOUD_NAME);
+
 export default multer({ storage });
