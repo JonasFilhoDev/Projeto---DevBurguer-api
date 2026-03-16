@@ -2,7 +2,6 @@ import { Router } from 'express';
 import ProductController from './app/controllers/ProductController.js';
 import SessionController from './app/controllers/SessionController.js';
 import UserController from './app/controllers/UserController.js';
-import multer from 'multer';
 import multerConfig from './config/multer.js';
 import authMiddleware from './app/middlewares/auth.js';
 import CategoryController from './app/controllers/CategoryController.js';
@@ -13,7 +12,7 @@ import CreatePaymentIntentController from './app/controllers/stripe/CreatePaymen
 
 const routes = new Router();
 
-const upload = multer(multerConfig);
+const upload = multerConfig;
 
 routes.post('/users', UserController.store);
 routes.post('/sessions', SessionController.store);
