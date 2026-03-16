@@ -4,10 +4,22 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import 'dotenv/config';
 
 
-cloudinary.config({
-  cloudinary_url: process.env.CLOUDINARY_URL,
-  secure: true,
-});
+const cloudinaryUrl = process.env.CLOUDINARY_URL;
+if (cloudinaryUrl) {
+  const url = new URL(cloudinaryUrl);
+  const cloud_name = url.hostname;
+  const api_key = url.username;
+  const api_secret = url.password;
+
+  cloudinary.config({
+    cloud_name,
+    api_key,
+    api_secret,
+    secure: true,
+  });
+} else {
+  console.error('CLOUDINARY_URL not found');
+}
 
 
 const storage = new CloudinaryStorage({
